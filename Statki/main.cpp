@@ -26,9 +26,7 @@ int main() {
     if (!muzyka.openFromFile("muzyka.wav")) {
         std::cerr << "Nie mo¿na za³adowaæ muzyki (muzyka.wav)!" << std::endl;
     }
-    muzyka.setLoop(true);
-    muzyka.setVolume(20.f);
-    muzyka.play();
+    
     
 
     sf::Texture textureMenuBg;
