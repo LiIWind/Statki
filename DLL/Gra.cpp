@@ -158,7 +158,7 @@ namespace Statki {
         return losujWspolrzedneAtaku();
     }
 
-    void Gra::zapiszGre(const std::string& nazwaPliku) const {
+	void Gra::zapiszGre(const std::string& nazwaPliku) const { //Obs³uga plików binarnych
         std::ofstream plik(nazwaPliku, std::ios::binary);
         if (!plik.is_open())
             throw std::runtime_error("Nie mo¿na otworzyæ pliku do zapisu (binarnie).");
@@ -181,7 +181,7 @@ namespace Statki {
         plik.close();
     }
 
-    void Gra::wczytajGre(const std::string& nazwaPliku) {
+    void Gra::wczytajGre(const std::string& nazwaPliku) {  //Obs³uga plików binarnych
         std::ifstream plik(nazwaPliku, std::ios::binary);
         if (!plik.is_open())
             throw std::runtime_error("Nie mo¿na otworzyæ pliku do odczytu (binarnie).");

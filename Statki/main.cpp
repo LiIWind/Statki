@@ -100,7 +100,7 @@ int main() {
                     graWczytana = true;
                     stan = StanAplikacji::Gra;
                 }
-                catch (const std::exception& e) {
+                catch (const std::exception& e) { //Obs³uga wyj¹tków
                     sf::Text blad("B³ad wczytywania gry!", font, 32);
                     blad.setFillColor(sf::Color::Red);
                     blad.setPosition(OKNO_SZEROKOSC / 2.f - blad.getLocalBounds().width / 2, 560);
