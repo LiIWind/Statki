@@ -8,22 +8,6 @@
 
 namespace Statki {
 
-    std::vector<std::pair<int, int>> sasiedniePolaWokolStatku(const Plansza& plansza, const std::vector<std::pair<int, int>>& statek) {
-        std::set<std::pair<int, int>> sasiedzi;
-        for (auto [x, y] : statek) {
-            for (int dx = -1; dx <= 1; ++dx) {
-                for (int dy = -1; dy <= 1; ++dy) {
-                    if (dx == 0 && dy == 0) continue;
-                    int nx = x + dx, ny = y + dy;
-                    if (plansza.czyPoprawneWspolrzedne(nx, ny))
-                        sasiedzi.insert({ nx, ny });
-                }
-            }
-        }
-        for (auto pole : statek) sasiedzi.erase(pole);
-        return std::vector<std::pair<int, int>>(sasiedzi.begin(), sasiedzi.end());
-    }
-
     Gra::Gra(int rozmiarPlanszy, const std::vector<int>& dlugosciStatkow)
         : planszaGracza(rozmiarPlanszy, dlugosciStatkow),
         planszaKomputera(rozmiarPlanszy, dlugosciStatkow),
@@ -48,6 +32,48 @@ namespace Statki {
     bool Gra::atakujKomputer(int x, int y) {
         bool trafiony = planszaKomputera.atakuj(x, y);
         return trafiony;
+    }
+
+    std::pair<int, int> Gra::losujWspolrzedneAtaku() const {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dyst(0, planszaGracza.getRozmiar() - 1);
+        return { dyst(gen), dyst(gen) };
+    }
+
+    void Gra::umiescStatkiKomputera() {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dyst(0, 1);
+
+        for (int dlugosc : dlugosciStatkow) {
+            bool umieszczono = false;
+            while (!umieszczono) {
+                int x = losujWspolrzedneAtaku().first;
+                int y = losujWspolrzedneAtaku().second;
+                Orientacja orientacja = (dyst(gen) == 0) ? Orientacja::Pozioma : Orientacja::Pionowa;
+                try {
+                    umieszczono = planszaKomputera.umiescStatek(x, y, dlugosc, orientacja);
+                }
+                catch (...) {}
+            }
+        }
+    }
+
+    std::vector<std::pair<int, int>> sasiedniePolaWokolStatku(const Plansza& plansza, const std::vector<std::pair<int, int>>& statek) {
+        std::set<std::pair<int, int>> sasiedzi;
+        for (auto [x, y] : statek) {
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    if (dx == 0 && dy == 0) continue;
+                    int nx = x + dx, ny = y + dy;
+                    if (plansza.czyPoprawneWspolrzedne(nx, ny))
+                        sasiedzi.insert({ nx, ny });
+                }
+            }
+        }
+        for (auto pole : statek) sasiedzi.erase(pole);
+        return std::vector<std::pair<int, int>>(sasiedzi.begin(), sasiedzi.end());
     }
 
     bool Gra::atakujGracza(int x, int y) {
@@ -99,32 +125,6 @@ namespace Statki {
             } while (planszaGracza.czyPoleAtakowane(ruch.first, ruch.second));
             historiaAI.push_back(ruch);
             return ruch;
-        }
-    }
-
-    std::pair<int, int> Gra::losujWspolrzedneAtaku() const {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dyst(0, planszaGracza.getRozmiar() - 1);
-        return { dyst(gen), dyst(gen) };
-    }
-
-    void Gra::umiescStatkiKomputera() {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dyst(0, 1);
-
-        for (int dlugosc : dlugosciStatkow) {
-            bool umieszczono = false;
-            while (!umieszczono) {
-                int x = losujWspolrzedneAtaku().first;
-                int y = losujWspolrzedneAtaku().second;
-                Orientacja orientacja = (dyst(gen) == 0) ? Orientacja::Pozioma : Orientacja::Pionowa;
-                try {
-                    umieszczono = planszaKomputera.umiescStatek(x, y, dlugosc, orientacja);
-                }
-                catch (...) {}
-            }
         }
     }
 
